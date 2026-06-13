@@ -1,0 +1,42 @@
+name: Daily Triage Loop
+
+on:
+  schedule:
+    - cron: '0 8 * * 1-5'   # weekdays at 08:00 UTC
+  workflow_dispatch:          # allow manual trigger
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write          # to commit STATE.md
+      issues: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install openai schedule requests
+
+      - name: Run triage loop (report-only)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          USE_LOCAL: "false"
+          OPENAI_MODEL: "gpt-4o-mini"   # cheaper for triage
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+        run: |
+          python starters/minimal-loop/run.py --mode triage --report-only
+
+      - name: Commit updated STATE.md
+        run: |
+          git config user.name  "loop-bot"
+          git config user.email "loop-bot@users.noreply.github.com"
+          git add STATE.md
+          git diff --staged --quiet || git commit -m "chore: loop triage $(date -u +%Y-%m-%d)"
+          git push

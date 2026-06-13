@@ -1,0 +1,48 @@
+patterns:
+  - name: daily-triage
+    cadence: 1d–2h
+    risk: low
+    token_cost: low
+    week_one: L1 report-only
+    file: patterns/daily-triage.md
+    starter: starters/minimal-loop
+
+  - name: pr-babysitter
+    cadence: 5–15m
+    risk: medium
+    token_cost: high
+    week_one: L1 watch
+    file: patterns/pr-babysitter.md
+    starter: starters/pr-babysitter
+
+  - name: ci-sweeper
+    cadence: 5–15m
+    risk: medium
+    token_cost: very_high
+    week_one: L2 cautious
+    file: patterns/ci-sweeper.md
+    starter: starters/ci-sweeper
+
+  - name: dependency-sweeper
+    cadence: 6h–1d
+    risk: medium
+    token_cost: medium
+    week_one: L2 patch-only
+    file: patterns/dependency-sweeper.md
+    starter: starters/dependency-sweeper
+
+  - name: changelog-drafter
+    cadence: 1d or tag
+    risk: low
+    token_cost: low
+    week_one: L1 draft
+    file: patterns/changelog-drafter.md
+    starter: starters/changelog-drafter
+
+  - name: post-merge-cleanup
+    cadence: 1d–6h
+    risk: low
+    token_cost: low
+    week_one: L1 off-peak
+    file: patterns/post-merge-cleanup.md
+    starter: starters/minimal-loop
