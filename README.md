@@ -6,7 +6,7 @@ You design the system that does it instead.**
 A Python-native reference repo for loop engineering — practical patterns, runnable starters, and
 skills you can clone and adapt. Works with **Ollama (local/free)** or **OpenAI API**.
 
-> Inspired by Addy Osmani's essay and the cobusgreyling/loop-engineering reference repo.
+
 
 ---
 
