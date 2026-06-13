@@ -1,0 +1,20 @@
+name: Validate Patterns
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check patterns registry vs files
+        run: python scripts/validate_patterns.py
+
+      - name: Audit this repo's loop readiness
+        run: python tools/loop_audit.py .
