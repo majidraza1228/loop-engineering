@@ -46,3 +46,11 @@ patterns:
     week_one: L1 off-peak
     file: patterns/post-merge-cleanup.md
     starter: starters/minimal-loop
+
+  - name: test-coverage-watcher
+    cadence: 2h–1d
+    risk: low
+    token_cost: medium
+    week_one: L1 report-only
+    file: patterns/test-coverage-watcher.md
+    starter: starters/test-coverage-watcher

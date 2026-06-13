@@ -14,20 +14,86 @@ skills you can clone and adapt. Works with **Ollama (local/free)** or **OpenAI A
 
 ```bash
 # 1. Install deps
-pip install openai schedule requests
+pip install openai schedule requests flask
 
-# 2. Start Ollama (free, local) — or set OPENAI_API_KEY for cloud
-ollama pull llama3
-
-# 3. Scaffold a starter
+# 2. Scaffold a starter
 python tools/loop_init.py . --pattern daily-triage
 
-# 4. Audit your repo's loop readiness
+# 3. Audit your repo's loop readiness
 python tools/loop_audit.py . --suggest
 
-# 5. Run your first loop (report-only, safe)
-python starters/minimal-loop/run.py --mode once
+# 4. Run your first loop (report-only, safe)
+OPENAI_API_KEY=sk-... python starters/minimal-loop/run.py --mode once --report-only
 ```
+
+---
+
+## Live Demo (browser UI)
+
+![Loop Engineering Live Demo](docs/assets/demo-screenshot.png)
+
+Run the full loop pipeline in a browser with real-time terminal output.
+
+### 1. Install deps
+
+```bash
+pip install openai schedule requests flask
+```
+
+### 2. Start the demo server
+
+**Minimal (triage only):**
+```bash
+OPENAI_API_KEY=sk-... python demo_server.py
+```
+
+**With Slack + GitHub PR:**
+```bash
+OPENAI_API_KEY=sk-...          \
+GITHUB_TOKEN=ghp_...           \
+GITHUB_REPO=owner/repo         \
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/... \
+python demo_server.py
+```
+
+### 3. Open the browser
+
+```
+http://localhost:5050
+```
+
+### 4. Choose a mode and click Run loop
+
+| Mode | What happens |
+|---|---|
+| **Triage only** | Scans repo, prints findings, updates STATE.md. No code written. |
+| **Full cycle** | Triage → worktree → maker writes fix → checker scores → STATE.md updated → PR opened (if GITHUB_TOKEN set) → Slack notified (if SLACK_WEBHOOK_URL set) |
+
+---
+
+### Getting credentials
+
+**OpenAI API key**
+- platform.openai.com → API keys → Create new secret key
+
+**GitHub token**
+- github.com → Settings → Developer settings → Personal access tokens → New token
+- Required scope: `repo`
+- Format for `GITHUB_REPO`: `owner/repo` (e.g. `syedraza/loop-engineering`)
+
+**Slack webhook**
+- api.slack.com/apps → Create App → Incoming Webhooks → Activate → Add to channel → copy URL
+
+---
+
+### Local LLM (Ollama — free, no API key)
+
+```bash
+ollama pull llama3.2:1b
+LOCAL_MODEL=llama3.2:1b python demo_server.py
+```
+
+Set `USE_LOCAL=false` (default is `true`) to switch to OpenAI.
 
 ---
 

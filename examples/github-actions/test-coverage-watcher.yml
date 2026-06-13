@@ -1,0 +1,45 @@
+name: Test Coverage Watcher
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 22 * * *'   # nightly at 22:00 UTC
+  workflow_dispatch:
+
+jobs:
+  coverage-watch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # to commit STATE.md baseline
+      pull-requests: write   # to open draft PRs (L2 only)
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install openai schedule requests pytest pytest-cov
+
+      - name: Run coverage watcher (report-only, L1)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          USE_LOCAL: "false"
+          OPENAI_MODEL: "gpt-4o-mini"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+        run: |
+          python starters/test-coverage-watcher/run.py --mode once
+          # To enable L2 (auto-draft test PRs), add: --fix
+
+      - name: Commit updated STATE.md
+        run: |
+          git config user.name  "coverage-bot"
+          git config user.email "coverage-bot@users.noreply.github.com"
+          git add STATE.md
+          git diff --staged --quiet || git commit -m "chore: coverage watch $(date -u +%Y-%m-%d)"
+          git push

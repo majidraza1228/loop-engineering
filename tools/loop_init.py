@@ -14,12 +14,13 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).parent.parent
 
 PATTERNS = {
-    "daily-triage":      "starters/minimal-loop",
-    "ci-sweeper":        "starters/ci-sweeper",
-    "pr-babysitter":     "starters/minimal-loop",   # uses minimal-loop base
-    "dependency-sweeper":"starters/dependency-sweeper",
-    "changelog-drafter": "starters/changelog-drafter",
-    "post-merge-cleanup":"starters/minimal-loop",
+    "daily-triage":           "starters/minimal-loop",
+    "ci-sweeper":             "starters/ci-sweeper",
+    "pr-babysitter":          "starters/minimal-loop",   # uses minimal-loop base
+    "dependency-sweeper":     "starters/dependency-sweeper",
+    "changelog-drafter":      "starters/changelog-drafter",
+    "post-merge-cleanup":     "starters/minimal-loop",
+    "test-coverage-watcher":  "starters/test-coverage-watcher",
 }
 
 FILES_TO_COPY = [

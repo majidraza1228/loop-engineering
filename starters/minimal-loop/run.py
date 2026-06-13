@@ -17,7 +17,7 @@ from pathlib import Path
 # allow running from the repo root or this directory
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from loop_engine import LoopRunner, Config
+from loop_engine import Config, LoopRunner
 
 
 class MinimalLoop(LoopRunner):
@@ -37,6 +37,16 @@ class MinimalLoop(LoopRunner):
         self.memory.log_run(f"Triage:\n{findings}")
         print(f"\nFindings:\n{findings}\n")
 
+        # seed Open Tasks from triage output (skip duplicates)
+        existing = {t[:50] for t in self.memory.get_open_tasks()}
+        for line in findings.splitlines():
+            line = line.strip()
+            if line.startswith("- [ ]"):
+                task = line[5:].strip()
+                if not any(task[:50] in e for e in existing):
+                    self.memory.add_task(task)
+                    existing.add(task[:50])
+
         if self.REPORT_ONLY:
             print("[minimal-loop] Report-only mode — no auto-fix. Review STATE.md.")
             return
@@ -45,7 +55,9 @@ class MinimalLoop(LoopRunner):
         if tasks:
             target = next((t for t in tasks if "high" in t.lower()), tasks[0])
             print(f"[minimal-loop] Fixing: {target}")
-            self.fix_task(target, open_pr=False)   # set open_pr=True when ready
+            self.fix_task(target, open_pr=bool(Config.GITHUB_TOKEN))
+            print("[minimal-loop] STATE.md updated.")
+            print(f"  [slack] (skipped) Agent completed: {target[:60]}")
         else:
             print("[minimal-loop] No open tasks.")
 
@@ -59,8 +71,7 @@ def main():
     args = parser.parse_args()
 
     loop = MinimalLoop()
-    if args.report_only:
-        loop.REPORT_ONLY = True
+    loop.REPORT_ONLY = args.report_only
 
     if args.mode == "triage":
         print(f"[debug] use_local={loop.llm.use_local}  model={loop.llm.model}")
